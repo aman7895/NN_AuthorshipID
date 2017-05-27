@@ -14,32 +14,51 @@ from sklearn.model_selection import train_test_split
 # This function is called from Main and expects train and test values for x and y
 def load_ag_data(authors = None, docID = None): 
     
-    data = pd.read_csv("aman_ml_authors_10.csv")
+    data = pd.read_csv("amannew.csv")
     
     print(data.shape)
     
-    authorList = data.author_id.unique()
-    
-    authorListfull = data.author_id.tolist()
-    
     labels = []
+    groups = []
+    features = []
+    size = []
     
-    textlist = data.drop('author_id', axis = 1)
+    authorList = authors
     
-    print(textlist.shape)
+    for auth in authorList:
+        current = data.loc[data['author_id'] == auth]
+        size.append(current.shape[0])
+
+    print("Min: %s" % (min(size)))
+    print("Max: %s" % (max(size)))
     
-    textlist = textlist.to_records(index = False).tolist()
+    data = data.loc[data['doc_id'] != docID]
     
-    print(len(textlist[0]))
+    print data.shape
     
-    print(len(textlist))
-    
-    for auth in authorListfull:
-        labels = labels + [authorList.tolist().index(auth)]
+    for auth in authorList:
+        current = data.loc[data['author_id'] == auth]
+
+        # current = current.sample(n = samples)
+        feat = current[["f1", "f2", "f3", "f4", 
+                        "f5", "f6", "f7", "f8",
+                        "f9", "f10"]].values.tolist()
+        features = features + feat
+        
+        labels = labels + [authorList.index(author_id) for author_id in current.author_id.tolist()]
+        
+        doc = current["doc_id"].tolist()
+        groups = groups + doc
         
     labels = to_categorical(np.asarray(labels))
     
-    X_train, X_test, y_train, y_test = train_test_split(textlist, labels, test_size=0.3, random_state=123)
+    features = np.array(features)
+    labels = np.array(labels)
+    groups = np.array(groups)
+    
+    
+    
+    X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=0.3, random_state=123)
     
     # return (texts, labels, labels_index, samples)
 

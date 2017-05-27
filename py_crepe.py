@@ -12,7 +12,7 @@ from keras.layers import Dense, Dropout, LSTM
 
 def model(dense_outputs, cat_output):
     model = Sequential()
-    model.add(Dense(30, input_shape=(16,)))
+    model.add(Dense(30, input_shape=(10,)))
     model.add(Dropout(0.5))
     model.add(Dense(10, activation='relu'))
     model.add(Dropout(0.5))
